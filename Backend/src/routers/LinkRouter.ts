@@ -7,6 +7,12 @@ router.post('/api', (req:Request, res:Response)=>{
     controller.link = req;
     controller.postLink(req, res);
 })
+
+router.post('/api/:word', (req:Request, res:Response)=>{
+    controller.link = req;
+    controller.postLinkWithUniqueWord(req, res)
+})
+
 router.get('/api/:link', (req:Request, res:Response)=>{
     controller.getFullLink(req, res);
 })
