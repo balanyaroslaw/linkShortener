@@ -1,16 +1,18 @@
-import express, {Express, Request, Response} from 'express';
+import express, {Express, Request, Response, Router} from 'express';
 import cors from 'cors'
 import bodyParser from 'body-parser';
-import router from './routers/LinkRouter'
+import {LinkRouter} from './routers/LinkRouter'
 import { resolve } from 'path';
 class Server{
     private app:Express
+    private router:Router = new LinkRouter().router
     private config():void
     {
         this.app.use(express.json())
         this.app.use(bodyParser.urlencoded({ extended: false }))
         this.app.use(bodyParser.json())
-        this.app.use('/',router)
+        this.app.use(cors())
+        this.app.use('/', this.router)
     }
 
     constructor()

@@ -5,7 +5,7 @@ import {Service} from '../service/LinkDecline'
 import { QueryError } from 'mysql2'
 export class Controller
 {
-    private _service = new Service()
+    private _service:Service = new Service()
     private _link:ILink
     public set link(req:Request)
     {
@@ -23,13 +23,13 @@ export class Controller
                 if (error)
                 {
                     res.status(500).json(error).end()
-                    return
                 }
                 else
                 {
-                    if(response.length!==0)
+                    if(response[0].full_link)
                     {
-                        res.status(200).json(response).end()
+                        res.redirect(response[0].full_link)
+                        res.end()
                     }
                     else
                     {
@@ -43,109 +43,43 @@ export class Controller
     {
         if(this._link.full_link && this._link.short_link)
         {
-            const SQL_checkExistRecord = "SELECT short_link FROM links.link_table WHERE full_link = (?)"
-            connection.query(SQL_checkExistRecord,[this._link.full_link],
-            (error:QueryError|null, response:any)=>
+            const SQL_insertData:string = "INSERT INTO links.link_table (full_link, short_link) VALUES (?,?)"
+
+            const link_values:string[] = [this._link.full_link, this._link.short_link]
+
+            connection.query(SQL_insertData,link_values,(error:QueryError|null, response:any)=>
             {
-                if (error)
+                if(error)
                 {
                     res.status(500).json(error).end()
-                    return
                 }
                 else
                 {
-                    if(response.length === 0)
-                    {
-                        const SQL_insertData:string = "INSERT INTO links.link_table (full_link, short_link) VALUES (?,?)"
-
-                        const link_values:string[] = [this._link.full_link, this._link.short_link]
-
-                        connection.query(SQL_insertData,link_values,(error:QueryError|null, response:any)=>
-                        {
-                            if(error)
-                            {
-                                res.status(500).json(error).end()
-                            }
-                            else
-                            {
-                                res.status(201).json(this._link.short_link)
-                            }
-                        })
-                    }
-                    else
-                    {
-                        res.status(409).json(response)
-                    }
+                    res.status(201).json(this._link.short_link)
                 }
-            });
+            })
         }
     } 
 
     public postLinkWithUniqueWord = (req:Request, res:Response) =>
     {
-        const SQL_checkExistRecordWithWord = "SELECT short_link FROM links.link_table WHERE (short_link, full_link) = (?,?)"
 
-        const word = req.params.word
-
-        if(word.length >= 6)
-        {
-            connection.query(SQL_checkExistRecordWithWord,[word,this._link.full_link],(error:QueryError|null, response:any)=>
-            {
-                if (error)
-                {
-                    res.status(500).json(error).end()
-                    return
-                }
-                else
-                {
-                    if(response.length === 0)
-                    {
-                        const SQL_checkExistRecord = "SELECT short_link FROM links.link_table WHERE full_link = (?)"
-                        connection.query(SQL_checkExistRecord,[this._link.full_link],
-                        (error:QueryError|null, response:any)=>
-                        {
-                            if (error)
-                            {
-                                res.status(500).json(error).end()
-                                return
-                            }
-                            else
-                            {
-                                if(response.length === 0)
-                                {
-                                    const SQL_insertData:string = "INSERT INTO links.link_table (full_link, short_link) VALUES (?,?)"
+        const word:string = req.params.word
+        console.log(req.params)
+        const SQL_insertData:string = "INSERT INTO links.link_table (full_link, short_link) VALUES (?,?)"
     
-                                    const link_values:string[] = [this._link.full_link, word]
-                
-                                    connection.query(SQL_insertData,link_values,(error:QueryError|null, response:any)=>
-                                    {
-                                        if(error)
-                                        {
-                                            res.status(500).json(error).end()
-                                        }
-                                        else
-                                        {
-                                            res.status(201).json(word)
-                                        }
-                                    })
-                                }
-                                else
-                                {
-                                    res.status(409).json('Already taken')
-                                }
-                            }
-                        });
-                    }
-                    else
-                    {
-                        res.status(409).json('Already taken')
-                    }
-                }
-            });
-        }
-        else
+        const link_values:string[] = [this._link.full_link, word]
+
+        connection.query(SQL_insertData,link_values,(error:QueryError|null, response:any)=>
         {
-            res.status(401).json("Short word. Try longer")
-        }
+            if(error)
+            {
+                res.status(500).json(error).end()
+            }
+            else
+            {
+                res.status(201).json(word)
+            }
+        })
     }
 }
