@@ -9,15 +9,13 @@ const PostLink = (link:string) =>
     {
         const data = axios.post(URL,{link:link})
         .then(response=>{
-            response.data.map((link:any)=>{setShortLink(URL+link.short_link)})
+            setShortLink(URL+response.data[0].short_link)
         })
         .catch(error=>{console.log(error)})
         return shortLink
     }
 
     post()
-
-    
 
     return {post}
 }

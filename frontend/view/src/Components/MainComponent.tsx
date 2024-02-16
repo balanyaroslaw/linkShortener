@@ -1,13 +1,14 @@
 import React, { ReactElement,useEffect,useState } from 'react'
-import axios from 'axios'
+import { useTranslation} from 'react-i18next';
 import {PostLink} from '../API/PostLink'
 import ShortLinkComponent from './ShortLinkComponent'
 function MainComponent()
 {
+    const {t} = useTranslation();
     const [link, setLink] = useState<string>('')
     const [shortLink, setShortLink] = useState<string>('')
-
-    const {post} = PostLink(link);
+    
+    var {post} = PostLink(link);
 
     const handleClick = (e:React.MouseEvent<HTMLElement>) =>
     {
@@ -22,7 +23,7 @@ function MainComponent()
         <div className="main__container">
             <div className="title__container">
                 <span className="title__text">
-                    yabaURL - the best link shortener service 
+                    {t('title')}
                 </span>
             </div>
             {shortLink&&<ShortLinkComponent link={shortLink}/>}
@@ -33,7 +34,7 @@ function MainComponent()
             </div>
             <div className="button__container" onClick={e=>{handleClick(e)}}>
                 <div className="cut__button">
-                    <span className='button'>CUT</span>
+                    <span className='button'>{t('buttons.button1')}</span>
                 </div>
             </div>
         </div>

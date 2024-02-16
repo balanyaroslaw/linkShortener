@@ -84,7 +84,7 @@
 }
 .shortlink__content
 {
-  width: 800px;
+  min-width: 800px;
   height: 50px;
   display: flex;
   justify-content: space-around;
@@ -98,7 +98,7 @@
   line-height:auto;
   border-style:hidden;
   outline:none;
-  width:171px;
+  min-width: 180px;
 }
 .shortlink
 {
@@ -108,10 +108,11 @@
   line-height:auto;
   border-style:hidden;
   outline:none;
+  margin: 0px 15px 0px 15px;
 }
 .copy__button
 {
-  width: 100px;
+  min-width: 100px;
   min-height: 40px;
   background-color: #30747D;
   border-radius: 8px;
